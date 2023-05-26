@@ -1,15 +1,10 @@
-import * as React from "react";
 import * as WebBrowser from "expo-web-browser";
-import * as Google from "expo-auth-session/providers/google";
 import { initializeApp } from "firebase/app";
-import {
-  getAuth,
-  GoogleAuthProvider,
-  signInWithCredential,
-} from "firebase/auth";
-import { Button, View, Text } from "react-native"; // Text component added
+import { createContext, useState } from "react";
+import UserContext from "./userContext";
+import { NavigationContainer } from "@react-navigation/native";
+import StackNavigator from "./components/StackNavigator";
 
-// Initialize Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyCxu5QY13NTwrfyHRtdg5gTSyx1yfeGx4s",
   authDomain: "todolistapp-86e03.firebaseapp.com",
@@ -25,44 +20,13 @@ initializeApp(firebaseConfig);
 WebBrowser.maybeCompleteAuthSession();
 
 export default function App() {
-  const [request, response, promptAsync] = Google.useIdTokenAuthRequest({
-    clientId:
-      "207479923509-nav69m41ilh13au06kqnhlds28k1cap0.apps.googleusercontent.com",
-  });
-
-  const [user, setUser] = React.useState(null); // added state for user
-
-  React.useEffect(() => {
-    if (response?.type === "success") {
-      console.log(response);
-      const { id_token } = response.params;
-
-      const auth = getAuth();
-      const credential = GoogleAuthProvider.credential(id_token);
-      signInWithCredential(auth, credential)
-        .then((userCredential) => {
-          // on success, update the user state
-          setUser(userCredential.user);
-        })
-        .catch((error) => {
-          // Here you can handle errors happened during the sign-in
-          console.error(error);
-        });
-    }
-  }, [response]);
+  const [user, setUser] = useState(null);
 
   return (
-    <View>
-      <Button
-        disabled={!request}
-        title="Login"
-        onPress={() => {
-          promptAsync();
-        }}
-      />
-      {user && ( // if user is logged in, display their info
-        <Text>Logged in as: {user.email}</Text>
-      )}
-    </View>
+    <UserContext.Provider value={{ user, setUser }}>
+      <NavigationContainer>
+        <StackNavigator />
+      </NavigationContainer>
+    </UserContext.Provider>
   );
 }
