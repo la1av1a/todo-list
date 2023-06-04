@@ -59,7 +59,6 @@ const LoginResult = () => {
     const querySnapshot = await getDocs(
       query(
         collection(db, user.email),
-        // Add where clauses to filter by date range
         where("date", ">=", startTimestamp),
         where("date", "<=", endTimestamp)
       )
@@ -135,9 +134,9 @@ const LoginResult = () => {
         isSuccess: false,
         date: timestamp,
       });
-      setInputValue(""); // Clear input value after adding item
+      setInputValue("");
       setInputVisible(false);
-      getData();
+      await getData();
     }
   };
 
@@ -227,8 +226,6 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   textInput: {
-    position: "absolute",
-    bottom: 0,
     height: 60,
     width: "100%",
     paddingHorizontal: 10,
@@ -241,6 +238,7 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 0,
     borderWidth: 1,
     borderColor: "#ccc",
+    marginBottom: Platform.OS === "ios" ? 20 : 0,
   },
 });
 

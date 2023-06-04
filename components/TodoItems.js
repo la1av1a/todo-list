@@ -18,6 +18,7 @@ const TodoItems = ({
 }) => {
   const [isEditing, setEditing] = useState(false);
   const [editValue, setEditValue] = useState("");
+  const [editItem, setEditItem] = useState(null);
 
   const handleStartEditing = (initialValue) => {
     setEditValue(initialValue);
@@ -28,18 +29,27 @@ const TodoItems = ({
     <View>
       {data.map((item) => (
         <View style={styles.itemContainer} key={item.id}>
-          <TouchableOpacity onPress={() => handleStartEditing(item.title)}>
-            {isEditing ? (
-              <TextInput
-                style={styles.editInput}
-                autoFocus={true}
-                onBlur={() => setEditing(false)}
-                value={editValue}
-                onChangeText={setEditValue}
-                onSubmitEditing={() => handleUpdateItem(item.id, editValue)}
-              />
-            ) : (
-              <View style={styles.itemContent}>
+          {isEditing && item.id === editItem ? (
+            <TextInput
+              style={styles.editInput}
+              autoFocus={true}
+              onBlur={() => {
+                setEditing(false);
+                setEditItem(null);
+              }}
+              value={editValue}
+              onChangeText={setEditValue}
+              onSubmitEditing={() => handleUpdateItem(item.id, editValue)}
+            />
+          ) : (
+            <>
+              <TouchableOpacity
+                onPress={() => {
+                  handleStartEditing(item.title);
+                  setEditItem(item.id);
+                }}
+                style={styles.itemContent}
+              >
                 <TouchableOpacity
                   onPress={() => handleToggleSuccess(item.id, item.isSuccess)}
                 >
@@ -55,17 +65,17 @@ const TodoItems = ({
                 >
                   {item.title}
                 </Text>
+              </TouchableOpacity>
+              <View style={styles.buttonContainer}>
+                <TouchableOpacity
+                  style={styles.deleteButton}
+                  onPress={() => handleDeleteItem(item.id)}
+                >
+                  <Text style={styles.buttonText}>Delete</Text>
+                </TouchableOpacity>
               </View>
-            )}
-          </TouchableOpacity>
-          <View style={styles.buttonContainer}>
-            <TouchableOpacity
-              style={styles.deleteButton}
-              onPress={() => handleDeleteItem(item.id)}
-            >
-              <Text style={styles.buttonText}>Delete</Text>
-            </TouchableOpacity>
-          </View>
+            </>
+          )}
         </View>
       ))}
     </View>
