@@ -1,20 +1,24 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import * as WebBrowser from "expo-web-browser";
+import { createContext, useEffect, useState } from "react";
+import UserContext from "./userContext";
+import { NavigationContainer } from "@react-navigation/native";
+import StackNavigator from "./components/StackNavigator";
+import { firebaseConfig } from "./util/firebase";
+
+WebBrowser.maybeCompleteAuthSession();
 
 export default function App() {
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    firebaseConfig();
+  }, []);
+
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <UserContext.Provider value={{ user, setUser }}>
+      <NavigationContainer>
+        <StackNavigator />
+      </NavigationContainer>
+    </UserContext.Provider>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
