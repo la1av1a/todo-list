@@ -4,10 +4,18 @@ import {
   GoogleAuthProvider,
   signInWithCredential,
 } from "firebase/auth";
-import { Button, View, Text } from "react-native";
+import {
+  Button,
+  View,
+  Text,
+  Image,
+  TouchableOpacity,
+  StyleSheet,
+} from "react-native";
 import * as Google from "expo-auth-session/providers/google";
 import userContext from "../userContext";
 import { useNavigation } from "@react-navigation/native";
+
 const LoginScreen = () => {
   const [request, response, promptAsync] = Google.useIdTokenAuthRequest({
     clientId:
@@ -16,6 +24,11 @@ const LoginScreen = () => {
 
   const { user, setUser } = React.useContext(userContext);
   const navigation = useNavigation();
+
+  const handleStartEditing = (initialValue) => {
+    setEditValue(initialValue);
+    setEditing(true);
+  };
 
   React.useEffect(() => {
     if (response?.type === "success") {
@@ -36,19 +49,32 @@ const LoginScreen = () => {
   }, [response]);
 
   return (
-    <View>
-      <Button
+    <View style={styles.container}>
+      <TouchableOpacity
         disabled={!request}
-        title="Login"
         onPress={() => {
           promptAsync();
         }}
-      />
-      {user && ( // if user is logged in, display their info
-        <Text>Logged in as: {user.email}</Text>
-      )}
+      >
+        <Image
+          source={require("../assets/btn_google_signin_light_normal_web.png")}
+          style={styles.button}
+        />
+      </TouchableOpacity>
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  button: {
+    width: 200, // Or whatever size you need
+    height: 50, // Or whatever size you need
+  },
+});
 
 export default LoginScreen;
